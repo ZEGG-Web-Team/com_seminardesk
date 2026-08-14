@@ -51,7 +51,10 @@ class AssetHelper
         );
         $wa->registerAndUseScript(
             'com_seminardesk.scripts',
-            Uri::root() . self::JS_PATH . '?hash=' . self::getAssetHash(self::JS_PATH)
+            Uri::root() . self::JS_PATH . '?hash=' . self::getAssetHash(self::JS_PATH),
+            [],
+            [],
+            ['jquery']
         );
     }
 

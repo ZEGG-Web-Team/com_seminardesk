@@ -250,8 +250,8 @@ class EventDateService
 
     /**
      * Apply filters to event list
-     * @param type $eventDates
-     * @param type $filters
+     * @param array<stdClass> $eventDates
+     * @param array $filters
      */
     public function filterEvents(&$eventDates, $filters = [])
     {
@@ -295,7 +295,7 @@ class EventDateService
           $labelExceptionsMatching = false;
         }
 
-        if ($filters['term']) {
+        if (isset($filters['term']) && $filters['term']) {
           $terms = explode(' ', $filters['term']);
           $termsMatching = false;
           foreach ($terms as $term) {

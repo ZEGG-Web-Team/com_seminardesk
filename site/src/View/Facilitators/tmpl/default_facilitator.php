@@ -23,7 +23,7 @@ $heading = $this->facilitator->heading ?? 'h2';
   </a>
   <div class="facilitator-description">
     <<?= $heading ?> class="facilitator-name">
-      <a href="<?= $this->facilitator->detailsUrl ?>" itemprop="url" rel="{handler: 'iframe'}">
+      <a href="<?= $this->facilitator->detailsUrl ?>" itemprop="url" class="wfpopup" rel="{handler: 'iframe'}">
         <?= $this->facilitator->title ?> <span itemprop="givenName"><?= $this->facilitator->firstName ?></span> <span itemprop="familyName"><?= $this->facilitator->lastName ?></span>
       </a>
     </<?= $heading ?>>
