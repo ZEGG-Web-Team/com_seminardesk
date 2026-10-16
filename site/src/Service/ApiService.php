@@ -15,6 +15,7 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\Http\HttpFactory;
 use Joomla\Uri\Uri;
 use Joomla\CMS\Log\Log;
+//use Joomla\Component\Seminardesk\Site\Service\ConfigService;
 
 /**
  * API Service for SeminarDesk
@@ -23,16 +24,6 @@ use Joomla\CMS\Log\Log;
  */
 class ApiService
 {
-    /**
-     * @var ConfigService
-     */
-    private ConfigService $configService;
-
-    /**
-     * @var CacheControllerFactoryInterface
-     */
-    private CacheControllerFactoryInterface $cacheFactory;
-
     /**
      * @var object|null Cache controller instance
      */
@@ -45,8 +36,8 @@ class ApiService
      * @param   CacheControllerFactoryInterface  $cacheFactory   The cache factory
      */
     public function __construct(
-        ConfigService $configService,
-        CacheControllerFactoryInterface $cacheFactory
+        private ConfigService $configService,
+        private CacheControllerFactoryInterface $cacheFactory
     ) {
         $this->configService = $configService;
         $this->cacheFactory = $cacheFactory;
@@ -87,21 +78,25 @@ class ApiService
     /**
      * Fetch data from the API (no caching)
      *
-     * @param   string  $api    The API base URL
      * @param   string  $route  The API route
-     * @return  mixed  The API response data (decoded JSON) or null on failure
+     * @param   array   $api    The API type, base URL and API key (if private api)
+     * @return  mixed   The API response data (decoded JSON) or null on failure
      */
-    protected function fetchFromApi(string $api, string $route): mixed
+    protected function fetchFromApi(string $route, array $api): mixed
     {
         try {
             $http = (new HttpFactory())->getAvailableDriver();
-            $url  = $api . $route;
+            $url  = $api['base_url'] . $route;
 
             // HTTP request headers
             $headers = [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ];
+            // Send API key for private API requests
+            if ($api['type'] === 'private_api') {
+                $headers['X-Api-Key'] = $api['api_key'];
+            }
 
             $timeout = 30;
             
@@ -135,17 +130,17 @@ class ApiService
      * Get data from SeminarDesk API with caching
      *
      * @param   string  $route  The API route (e.g., '/eventDates', '/events/123')
-     * @return  mixed  The API response data or null on failure
+     * @param   bool  $usePrivateApi  The API type, base URL and API key (if private api)
+     * @return  mixed           The API response data or null on failure
      */
-    public function getData(string $route): mixed
+    public function getData(string $route, bool $usePrivateApi = false): mixed
     {
-        $api = $this->configService->getApiUrl();
-        //die(' - api: ' . $api . ', route: ' . $route);
-        $cacheKey = 'seminardesk_api_' . str_replace('/', '_', $route);
+        $api = $usePrivateApi ? $this->configService->getPrivateApi() : $this->configService->getPublicApi();
+        $cacheKey = 'seminardesk_' . $api['type'] . '_' . str_replace('/', '_', $route);
         
         $data = $this->getCache()->get($cacheKey);
         if (!$data) {
-            $data = $this->fetchFromApi($api, $route);
+            $data = $this->fetchFromApi($route, $api);
             if ($data) {
                 $this->getCache()->store($data, $cacheKey);
             }
@@ -176,13 +171,25 @@ class ApiService
     }
 
     /**
-     * Get facilitators from the API
+     * Get facilitators from the public API
      * 
-     * @return  object  Facilitator data
+     * @return  array  Facilitator data
      */
     public function getFacilitators(): ?array
     {
-        $facilitators = $this->getData('/facilitators');
+        $facilitators = $this->getData('/facilitators', false);
+        return $facilitators ? ($facilitators->data ??  []) : [];
+    }
+
+    /**
+     * Get facilitators from the private API
+     * 
+     * @return  array  Facilitator data
+     */
+    public function getFacilitatorsPrivateInfo(): ?array
+    {
+        // Fetch all facilitators with a large page size to ensure completeness
+        $facilitators = $this->getData('/facilitators?page%5Bnumber%5D=1&page%5Bsize%5D=10000', true);
         return $facilitators ? ($facilitators->data ??  []) : [];
     }
 

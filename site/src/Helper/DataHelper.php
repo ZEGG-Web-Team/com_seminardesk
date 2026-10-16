@@ -6,15 +6,7 @@
  * @author     Benno Flory <benno.flory@gmx.ch>
  * @copyright  2022 Benno Flory
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
- * 
- * @deprecated 3.0 All methods have been moved to dedicated services:
- *   - EventDateService: loadEventDates(), prepareEventDate(), filterEvents(), getEventUrl(), getBookingUrl(), matchingFilters()
- *   - EventService: loadEvent(), prepareEvent(), getLodgingPrices(), getBoardPrices(), getStatusLabel()
- *   - FacilitatorService: loadFacilitators(), loadFacilitator(), prepareFacilitator(), getFacilitatorUrl()
- *   - ConfigService: getConfiguration(), getCurrentLanguageKey()
- *   - ApiService: API communication
- *   - FormatHelper: hasLabel(), cleanupHtml(), cleanupFormatting(), getDateFormatted(), createSlug()
- *   - TranslationHelper: translate()
+ * @deprecated 3.0 Use EventDateService, EventService, FacilitatorService instead
  */
 
 namespace Joomla\Component\Seminardesk\Site\Helper;

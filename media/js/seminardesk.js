@@ -209,8 +209,15 @@
           }
         });
         
-        // Show "no events found" message if no results are left
-        $('.sd-facilitatorlist').each(function() {
+        // Hide headers and show "no events found" message if no results are left
+        $('.sd-facilitatorlist').each(function () {
+          $(this).find('.row').each(function() {
+            if ($(this).find('.facilitator:not(.hidden)').length === 0) {
+              $(this).addClass('hidden');
+            } else {
+              $(this).removeClass('hidden');
+            }
+          });
           if ($(this).find('.facilitator:not(.hidden)').length === 0) {
             $(this).find('.no-facilitators-found').removeClass('hidden');
           } else {

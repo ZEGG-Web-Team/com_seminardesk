@@ -12,6 +12,7 @@ namespace Joomla\Component\Seminardesk\Site\Service;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Component\Seminardesk\Site\Helper\TranslationHelper;
 
 /**
@@ -37,6 +38,8 @@ class ConfigService
     public const LABELS_ENGLISH_ID = 2;
     public const LABELS_ENGLISH_POSSIBLE_ID = 53;
     public const LABELS_SPANISH_ID = 3;
+    public const LABELS_FACILITATOR_ZEGG_ID = 59;
+    public const LABELS_FACILITATOR_EXTERNAL_ID = 60;
 
     // Labels to hide from display
     public const LABELS_TO_HIDE = [
@@ -85,8 +88,10 @@ class ConfigService
         if ($this->config === null) {
             // Get key for translations from SeminarDesk (e.g. 'DE', 'EN')
             $langKey = strtoupper(TranslationHelper::getCurrentLanguageKey());
-            // Get SeminarDesk API settings
-            $tenantId = $this->app->getInput()->get('tenant_id', self::DEFAULT_TENANT_ID, 'STRING');
+            // Get SeminarDesk API settings from the component configuration (#__extensions.params)
+            $params   = ComponentHelper::getParams('com_seminardesk');
+            $tenantId = $params->get('tenant_id', self::DEFAULT_TENANT_ID);
+            $apiKey   = $params->get('api_key', '');
 
             $menu = $this->app->getMenu()->getActive();
             
@@ -98,6 +103,8 @@ class ConfigService
                 'tenant_id' => $tenantId,
                 'langKey' => $langKey,
                 'api' => 'https://' . $tenantId . '.seminardesk.de/api',
+                'private_api' => 'https://' . $tenantId . '.seminardesk.de/private-api',
+                'api_key' => $apiKey,
                 'booking_base' => 'https://booking.seminardesk.de/' . strtolower($langKey) . '/' . $tenantId . '/',
                 'eventlist_base' => 'index.php?option=com_seminardesk&Itemid=' . $eventsMenu . '&lang=' . strtolower($langKey),
                 'facilitators_base' => 'index.php?option=com_seminardesk&Itemid=' . $facilitatorsMenu . '&lang=' . strtolower($langKey),
@@ -111,11 +118,29 @@ class ConfigService
     /**
      * Get the SeminarDesk API base URL
      *
-     * @return  string  API base URL
+     * @return  array  API base URL as an associative array with key 'url'
      */
-    public function getApiUrl(): string
+    public function getPublicApi(): array
     {
-        return $this->getConfiguration()['api'];
+        return [
+            'type' => 'public_api',
+            'base_url' => $this->getConfiguration()['api'],
+            'api_key' => '',
+        ];
+    }
+
+    /**
+     * Get the SeminarDesk Private API base URL
+     *
+     * @return  array  API base URL as an associative array with key 'url'
+     */
+    public function getPrivateApi(): array
+    {
+        return [
+            'type' => 'private_api',
+            'base_url' => $this->getConfiguration()['private_api'],
+            'api_key' => $this->getConfiguration()['api_key'],
+        ];
     }
 
     /**

@@ -35,17 +35,33 @@ $this->addTemplatePath(JPATH_COMPONENT . '/src/View/Facilitators/tmpl');
   </div>
   
   <div class="sd-facilitatorlist container">
-    <div class="row">
-    <?php 
-      foreach($this->facilitators->getItems() as $facilitator) {
-        $facilitator->cssClasses  .= ' col-lg-6';
-        $facilitator->headings = 'h2';
-        $this->facilitator = & $facilitator;
-        echo $this->loadTemplate('facilitator');
-      }
-    ?>
+    <div class="row facilitators-zegg">
+      <h2 class="col-lg-12"><?= Text::_("COM_SEMINARDESK_FACILITATORS_ZEGG");?></h2>
+      <?php 
+        foreach($this->facilitators->getItems() as $facilitator) {
+          if (!$facilitator->isExternal) {
+            $facilitator->cssClasses  .= ' col-lg-6';
+            $facilitator->heading = 'h3';
+            $this->facilitator = & $facilitator;
+            echo $this->loadTemplate('facilitator');
+          }
+        }
+      ?>
     </div>
-    <div class="no-facilitators-found<?= ($this->facilitators->getItems())?' hidden':'' ?>">
+    <div class="row facilitators-external">
+      <h2 class="col-lg-12"><?= Text::_("COM_SEMINARDESK_FACILITATORS_EXTERNAL");?></h2>
+      <?php 
+        foreach($this->facilitators->getItems() as $facilitator) {
+          if ($facilitator->isExternal) {
+            $facilitator->cssClasses  .= ' col-lg-6';
+            $facilitator->heading = 'h3';
+            $this->facilitator = & $facilitator;
+            echo $this->loadTemplate('facilitator');
+          }
+        }
+      ?>
+    </div>
+    <div class="no-facilitators-found no-facilitators-zegg<?= ($this->facilitators->getItems())?' hidden':'' ?>">
       <p><?= Text::_("COM_SEMINARDESK_FACILITATORS_NO_FACILITATORS_FOUND");?></p>
     </div>
   </div>

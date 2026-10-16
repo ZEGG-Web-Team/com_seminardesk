@@ -23,13 +23,17 @@ class FormatHelper
     /**
      * Replace multiple (>= 3) underscores and dashes by <hr> tag.
      *
+     * Only standalone runs (bounded by whitespace or string/line boundaries) are
+     * replaced, so dash sequences inside words or URLs (e.g. a "a---b" slug) are
+     * left intact.
+     *
      * @param   string  $text  The text to process
      *
      * @return  string  Processed text
      */
     public static function replaceHR(string $text): string
     {
-        return preg_replace('/[_-]{3,}/', '<hr>', $text);
+        return preg_replace('/(?<![^\s])[_-]{3,}(?![^\s])/', '<hr>', $text);
     }
 
     /**

@@ -205,7 +205,7 @@ class EventDateService
      */
     public static function matchingFilters($eventDate, $filters): bool {
       //-- If term is set: Match them
-      if ($filters['term']) {
+      if (isset($filters['term']) &&$filters['term']) {
         $terms = explode(' ', strtolower(trim(str_replace('  ', ' ', $filters['term']))));
         $eventSearchableText = strtolower(
           $eventDate->title . ' ' . 
@@ -220,31 +220,32 @@ class EventDateService
       return
         // Check date filter
         (
+          !isset($filters['date']) || 
           !$filters['date'] || 
           $filters['date'] <= date('Y-m-d', $eventDate->endDate)
         )
         &&
         // Check category filter
         (
-          $filters['cat'] == 0 ||
+          !isset($filters['cat']) || $filters['cat'] == 0 ||
           in_array($filters['cat'], array_keys($eventDate->categories))
         )
         &&
         // Check organisator filter
         (
-          !in_array($filters['org'], ['zegg', 'external']) ||
+          !isset($filters['org']) || !in_array($filters['org'], ['zegg', 'external']) ||
           ($filters['org'] === 'zegg' && !$eventDate->isExternal) ||
           ($filters['org'] === 'external' && $eventDate->isExternal)
         )
         &&
         // Check search term filter (full text search)
         (
-          !$filters['term'] || count($terms_matching) == count($terms)
+          !isset($filters['term']) || !$filters['term'] || count($terms_matching) == count($terms)
         )
         &&
         // Check language filter
         (
-          !$filters['lang'] || array_search(strtolower($filters['lang']), $eventDate->languages) !== false
+          !isset($filters['lang']) || !$filters['lang'] || array_search(strtolower($filters['lang']), $eventDate->languages) !== false
         );
     }
 

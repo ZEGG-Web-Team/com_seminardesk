@@ -51,7 +51,7 @@ $this->addTemplatePath(JPATH_COMPONENT . '/src/View/Facilitators/tmpl');
 
     <?php if ($this->event->isBookable) : ?>
       <div class="registration">
-        <a href="<?= $this->event->bookingUrl ?>" class="btn modal" rel="{handler: 'iframe'}"
+        <a href="<?= $this->event->bookingUrl ?>" class="btn noicon wfpopup" rel="{handler: 'iframe'}"
           <?= ($this->event->isExternal)?(' title="' . Text::_("COM_SEMINARDESK_EVENT_REGISTRATION_A_M_FULL") . '"'):'' ?>>
           <?= Text::_("COM_SEMINARDESK_EVENT_REGISTRATION" . ($this->event->isExternal?"_A_M":"")); ?>
         </a>
@@ -113,12 +113,16 @@ $this->addTemplatePath(JPATH_COMPONENT . '/src/View/Facilitators/tmpl');
                     <?php 
                     // Get accomodation and meals (board) price range: 
                     // Get min / max price, removing unnecessary decimals, including full board (always) and taxes
-                    $min_price = min($date->lodgingPrices) + max($date->boardPrices);
-                    $max_price = max($date->lodgingPrices) + max($date->boardPrices);
-                    $min_price = str_replace(['.00', ',00', '.'], ['', '', ','], sprintf('%.2f', $min_price));
-                    $max_price = str_replace(['.00', ',00', '.'], ['', '', ','], sprintf('%.2f', $max_price));
+                    $lodgingPrices = (count($date->lodgingPrices) > 0 ? $date->lodgingPrices : [0]);
+                    $boardPrices = (count($date->boardPrices) > 0 ? $date->boardPrices : [0]);
+                    $min_price = min($lodgingPrices) + max($boardPrices);
+                    $max_price = max($lodgingPrices) + max($boardPrices);
+                    if ($max_price > 0) {
+                      $min_price = str_replace(['.00', ',00', '.'], ['', '', ','], sprintf('%.2f', $min_price));
+                      $max_price = str_replace(['.00', ',00', '.'], ['', '', ','], sprintf('%.2f', $max_price));
+                      echo sprintf(Text::_("COM_SEMINARDESK_EVENT_ACC_MEALS_ADDITIONAL"), $min_price, $max_price);
+                    }
                     ?>
-                    <?= sprintf(Text::_("COM_SEMINARDESK_EVENT_ACC_MEALS_ADDITIONAL"), $min_price, $max_price); ?>
                   </div>
                 <?php else : ?>
                   <div class="date-fees"><?= Text::_("COM_SEMINARDESK_EVENT_NO_FEES_TO_DISPLAY"); ?></div>
@@ -141,7 +145,7 @@ $this->addTemplatePath(JPATH_COMPONENT . '/src/View/Facilitators/tmpl');
             
             <div class="date-registration">
             <?php if ($date->isBookable) : ?>
-              <a href="<?= $date->bookingUrl ?>" class="btn modal" rel="{handler: 'iframe'}"
+              <a href="<?= $date->bookingUrl ?>" class="btn noicon wfpopup" rel="{handler: 'iframe'}"
                 <?= ($this->event->isExternal)?(' title="' . Text::_("COM_SEMINARDESK_EVENT_REGISTRATION_A_M_FULL") . '"'):'' ?>>
                 <?= Text::_("COM_SEMINARDESK_EVENT_REGISTRATION" . ($date->isExternal?"_A_M":"")); ?>
               </a>

@@ -11,6 +11,7 @@ namespace Joomla\Component\Seminardesk\Administrator\Controller;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Router\Route;
 
 /**
  * Display Controller for com_seminardesk admin
@@ -39,6 +40,10 @@ class DisplayController extends BaseController
      */
     public function display($cachable = false, $urlparams = []): static
     {
-        return parent::display($cachable, $urlparams);
+        // This component has no backend UI; its only settings are the Options.
+        // Redirect the admin entry point there so the (nonexistent) "seminardesk" view is never requested.
+        $this->setRedirect(Route::_('index.php?option=com_config&view=component&component=com_seminardesk', false));
+
+        return $this;
     }
 }

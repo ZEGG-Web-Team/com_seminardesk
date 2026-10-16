@@ -2,6 +2,7 @@
 <config>
     <fieldset label="COM_SEMINARDESK" name="seminardesk">
         <field name="tenant_id" filter="string" type="text" class="sd-events" label="COM_SEMINARDESK_FORM_LBL_TENANT_ID" description="COM_SEMINARDESK_FORM_DESC_TENANT_ID" hint="COM_SEMINARDESK_FORM_LBL_TENANT_ID"/>
+        <field name="api_key" filter="string" type="text" class="sd-events" label="COM_SEMINARDESK_FORM_LBL_API_KEY" description="COM_SEMINARDESK_FORM_DESC_API_KEY" hint="COM_SEMINARDESK_FORM_LBL_API_KEY"/>
 
     </fieldset>
 

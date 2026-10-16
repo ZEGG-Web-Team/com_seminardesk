@@ -73,7 +73,7 @@ class EventService
         if ($event) {
             // Get translations, labels, facilitators, categories etc. for event
             $this->prepareEvent($event);
-            $event->apiUri = $this->configService->getApiUrl() . '/events/' . $eventId;
+            $event->apiUri = $this->configService->getPublicApi()['base_url'] . '/events/' . $eventId;
             $event->langKey = $this->configService->getCurrentLanguageKey();
         }
         else {
@@ -244,8 +244,8 @@ class EventService
         }
 
         // Update organizer for external organizers
-        if ($event->isExternal) {
-        $structuredData['organizer']['name'] = implode(', ', array_column($structuredData['performer'], 'name')) . ' / ' . $structuredData['organizer']['name'];
+        if ($event->isExternal && !empty($structuredData['performer'])) {
+            $structuredData['organizer']['name'] = implode(', ', array_column($structuredData['performer'], 'name')) . ' / ' . $structuredData['organizer']['name'];
         }
 
         // Add event dates as subEvents
