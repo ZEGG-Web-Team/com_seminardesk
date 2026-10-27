@@ -50,6 +50,7 @@ $this->addTemplatePath(JPATH_COMPONENT . '/src/View/Facilitators/tmpl');
     </div>
     <div class="row facilitators-external">
       <h2 class="col-lg-12"><?= Text::_("COM_SEMINARDESK_FACILITATORS_EXTERNAL");?></h2>
+      <p class="col-lg-12"><?= Text::_("COM_SEMINARDESK_FACILITATORS_EXTERNAL_DESCRIPTION");?></p>
       <?php 
         foreach($this->facilitators->getItems() as $facilitator) {
           if ($facilitator->isExternal) {
